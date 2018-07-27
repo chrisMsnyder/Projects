@@ -1,0 +1,224 @@
+BOB WIRE                      StNum          Direction      AptNum         StType         StName         
+1 123 DIRT RD                   
+  SAN ANTONIO, TX 78210         
+                              123                                          ROAD           DIRT           
+
+2 123 DIRT                      
+  SAN ANTONIO, TX 78210         
+                              123                                                         DIRT           
+
+3 123 DIRT LN                   
+  SAN ANTONIO, TX 78210         
+                              123                                          LANE           DIRT           
+
+          Address        Address        Score          
+         1              2             95
+         1              3             80
+         2              3             95
+
+
+PENNY LOAFER                  StNum          Direction      AptNum         StType         StName         
+1 111 SHOE LN                   
+  SAN ANTONIO, TX 78249-1234    
+                              111                                          LANE           SHOE           
+
+2 111 SHOE ST                   
+  SAN ANTONIO, TX 78249-1234    
+                              111                                          STREET         SHOE           
+
+3 111 BOOT ST SOUTH APT 5A      
+  SAN ANTONIO, TX 78230         
+                              111            SOUTH          5A             STREET         BOOT           
+
+4 111 S BOOT STREET APT 5A      
+  SAN ANTONIO, TX 78230         
+                              111            SOUTH          5A             STREET         BOOT           
+
+          Address        Address        Score          
+         1              2            100
+         1              3             20
+         1              4             20
+         2              3             40
+         2              4             40
+         3              4            100
+
+
+FLO N WATER                   StNum          Direction      AptNum         StType         StName         
+1 45 S.W. VISTA RIO GRANDE RD   
+  SAN ANTONIO, TX 78210         
+                              45             SOUTH WEST                    ROAD           VISTA RIO GRANDE
+
+2 45 S WEST VISTA RIO GRANDE RD.
+  SAN ANTONIO, TX 78210         
+                              45             SOUTH                         ROAD           WEST VISTA RIO GRANDE
+
+3 45 SOUTHWEST VISTA RIO GRANDE ROAD
+  SAN ANTONOI, TX 78210         
+                              45             SOUTH WEST                    ROAD           VISTA RIO GRANDE
+
+4 SOUTHWEST VISTA RIO GRANDE ROAD
+  SAN ANTONIO, TX 78210         
+                              ***INVALID STREET NUM****     
+
+          Address        Address        Score          
+         1              2             60
+         1              3             93
+         2              3             53
+
+
+HOLLY WOOD                    StNum          Direction      AptNum         StType         StName         
+1 12 WEST AVE APT 23D           
+  LOS ANGELES, CA 90009         
+                              12                            23D            AVENUE         WEST           
+
+2 12 WEST AVE APT 23D           
+  LOS ANGELES,  90009           
+                              ***MISSING STATE****          
+
+3 12 WEST A ST APT 23           
+  LOS ANGELES, CA 90009         
+                              12             WEST           23             STREET         A              
+
+4 12 W. A ST APT 23             
+  LOS VEGAS, CA 90009           
+                              12             WEST           23             STREET         A              
+
+          Address        Address        Score          
+         1              3             39
+         1              4              0
+         3              4             70
+
+
+PENNY LANE                    StNum          Direction      AptNum         StType         StName         
+1 36-24 NORTH EAST ST           
+  SAN ANTONIO, TX 78230         
+                              3624           NORTH                         STREET         EAST           
+
+2 3624 EAST ST NORTH            
+  SAN ANTONIO, TX 78230         
+                              3624           NORTH                         STREET         EAST           
+
+          Address        Address        Score          
+         1              2            100
+
+
+SERGE N TIDE                  StNum          Direction      AptNum         StType         StName         
+1 1201 WATER ST E APT 222       
+  BEVERLY HILLS, CA 85486       
+                              1201           E              222            STREET         WATER          
+
+2 1210 WATER APT 222            
+  BEVERLY HILLS, CA 85486       
+                              1210                          222                           WATER          
+
+          Address        Address        Score          
+         1              2             75
+
+
+FREIDA LIVERY                 StNum          Direction      AptNum         StType         StName         
+1 4235 E                        
+  NEW CASTLE, DE 43321          
+                              4235                                                        E              
+
+2 4235 E ST                     
+  NEW CASTLE, DE 43321          
+                              4235                                         STREET         E              
+
+3 4235 NORTH E. ST.             
+  NEW CASTLE, DE 43321          
+                              4235           NORTH                         STREET         E              
+
+4 4235 E STREET N.              
+  NEW CASTLE, DE 43321          
+                              4235           N                             STREET         E              
+
+          Address        Address        Score          
+         1              2             95
+         1              3             85
+         1              4             85
+         2              3             90
+         2              4             90
+         3              4             85
+
+
+ELVUS KING                    StNum          Direction      AptNum         StType         StName         
+1 665-F BRIDLE AVENUE           
+  MEMPHIS, TN 52338             
+                              665F                                         AVENUE         BRIDLE         
+
+2 665F SOUTH BRIDLE AVE W.      
+  MEMPHIS, TN 52338-1887        
+                              665F           W                             AVENUE         SOUTH BRIDLE   
+
+3 665F S WEST BRIDLE AVE.       
+  MEMPHIS, TN 52338             
+                              665F           SOUTH                         AVENUE         WEST BRIDLE    
+
+          Address        Address        Score          
+         1              2             60
+         1              3             65
+         2              3             55
+
+
+WARREN PEACE                  StNum          Direction      AptNum         StType         StName         
+1 1 FULTON BOULEVARD            
+  CHARLESTON, SC 48239          
+                              1                                            BOULEVARD      FULTON         
+
+2 1 NORTHWEST FULTON BLVD       
+  CHARLESTON, SC S48239         
+                              ***INVALID ZIP****            
+
+3 1 FULTON BLVD. E              
+  CHARLESTON, TX 48239          
+                              1              E                             BOULEVARD      FULTON         
+
+          Address        Address        Score          
+         1              3             60
+
+
+MAY FLY                       StNum          Direction      AptNum         StType         StName         
+1 555 NORTH SOUTH OAK ST        
+  BOSTON, MA 95112              
+                              555            NORTH                         STREET         SOUTH OAK      
+
+2 555 N.S. OAK ST.              
+  BOSTON, MA 95112              
+                              555            NORTH SOUTH                   STREET         OAK            
+
+3 555 NORTH S OAK STREET        
+  BOSTON, MA 95112-8765         
+                              555            NORTH                         STREET         S OAK          
+
+          Address        Address        Score          
+         1              2             60
+         1              3             70
+         2              3             55
+
+
+BARB WIRE                     StNum          Direction      AptNum         StType         StName         
+1 9009 FRANKLIN SQAURE          
+  MADISON, WI 40606             
+                              9009                                                        FRANKLIN SQAURE
+
+2 9009 FRANKLIN SQ.             
+  MADISON, WI 40606             
+                              9009                                         SQUARE         FRANKLIN       
+
+3 9009 FRANKLIN SQ NORTH        
+  MIAMI, WI 40606               
+                              9009           NORTH                         SQUARE         FRANKLIN       
+
+4 9009 N. FRANKLIN SQUARE       
+  MADISON, WI 40606             
+                              9009           NORTH                         SQUARE         FRANKLIN       
+
+          Address        Address        Score          
+         1              2             70
+         1              3             20
+         1              4             60
+         2              3             50
+         2              4             90
+         3              4             60
+
+
