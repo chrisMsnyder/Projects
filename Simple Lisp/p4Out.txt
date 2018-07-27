@@ -1,0 +1,273 @@
+Break 6 [8]> (load "p4LispRun.txt" :echo T :print T)
+;;      Loading file p4LispRun.txt ...
+;;; p4LispRun.txt for cs3723
+;;; Copyright 2018 Larry W. Clark, this document may not be copied to any other website.
+
+;;; Convert the expressions to WFFs
+
+;;; simple polynomials
+(setf wff1 (wff '(4 X 3) ))
+(P 4 X 3)
+
+(setf wff2 (wff '((2 X 3) + (5 x 2) ) ))
+(+ (P 2 X 3) (P 5 X 2))
+
+(setf wff3 (wff '((3 X 3) + 5) ))
+(+ (P 3 X 3) 5)
+
+(setf wff4 (wff '((4 X 3) + (6 X) ) ))
+(+ (P 4 X 3) (P 6 X 1))
+
+(setf wff5 (wff '((5 x 4) + ((3 X 2) + (5 X))) ))
+(+ (P 5 X 4) (+ (P 3 X 2) (P 5 X 1)))
+
+
+;;; SIN 
+(setf wff6 (wff '(SIN X) ))
+(SIN X)
+
+(setf wff7 (wff '( SIN ( 7 X 2) ) ))
+(SIN (P 7 X 2))
+
+(setf wff8 (wff '( (8 X 3) + (SIN (2 X)) ) ))
+(+ (P 8 X 3) (SIN (P 2 X 1)))
+
+
+;;; diff, product, quotient
+(setf wff9 (wff '( (9 X 4) - (2 X 3)) ))
+(- (P 9 X 4) (P 2 X 3))
+
+(setf wff10 (wff '( (10 X 3) * (5 X 2)) ))
+(* (P 10 X 3) (P 5 X 2))
+
+(setf wff11 (wff '( (11 X 3) / (2 X 1) ) ))
+(/ (P 11 X 3) (P 2 X 1))
+
+(setf wff12 (wff '( (12 X 4) * ( (1 X 5) + (2 X 4)) ) ))
+(* (P 12 X 4) (+ (P 1 X 5) (P 2 X 4)))
+
+
+;;; more complex
+(setf wff13 (wff '(SIN ( (13 X 2) / (2 X 3)) ) ))
+(SIN (/ (P 13 X 2) (P 2 X 3)))
+
+(setf wff14 (wff '(COS ( 14 X)) ))
+(COS (P 14 X 1))
+
+
+;;; others
+(setf wff15 (wff '( (15 X 1) - (15 X)) ))
+(- (P 15 X 1) (P 15 X 1))
+
+(setf wff16 (wff '( ((16 X) + 5) * (4 X)) ))
+(* (+ (P 16 X 1) 5) (P 4 X 1))
+
+
+;;; unary
+(setf wff17 (wff '( - (17 X 2) ) ))
+(U- (P 17 X 2))
+
+(setf wff18 (wff '( - (COS ( 18 X)) ) ))
+(U- (COS (P 18 X 1)))
+
+
+;;; simple?
+(setf wff19 (wff '(19 X) ))
+(P 19 X 1)
+
+(setf wff20 (wff '( (20 X 2) - ( 20 x 2)) ))
+(- (P 20 X 2) (P 20 X 2))
+
+(setf wff21 (wff '(-(cos X)) ))
+(U- (COS X))
+
+(setf wff22 (wff '(- (sin (- (22 X 2)))) ))
+(U- (SIN (U- (P 22 X 2))))
+
+(setf wff23 (wff '( (- (23 X 2)) * (- (3 X 3))) ))
+(* (U- (P 23 X 2)) (U- (P 3 X 3)))
+
+(setf wff24 (wff '(cos (- (24 X 2))) ))
+(COS (U- (P 24 X 2)))
+
+(setf wff25 (wff '((6 X 3) + (7 X 3) ) ))
+(+ (P 6 X 3) (P 7 X 3))
+
+(setf wff26 (wff '((5 x 4) * ((3 X 2) + (5 X 2))) ))
+(* (P 5 X 4) (+ (P 3 X 2) (P 5 X 2)))
+
+
+;;; Take the derivatives
+wff1
+(P 4 X 3)
+(deriv wff1)
+(P 12 X 2)
+
+wff2
+(+ (P 2 X 3) (P 5 X 2))
+(deriv wff2)
+(+ (P 6 X 2) (P 10 X 1))
+
+;;; deriv of wff3 has a 0 poly term unless simplified
+wff3
+(+ (P 3 X 3) 5)
+(deriv wff3)
+(P 9 X 2)
+
+wff4
+(+ (P 4 X 3) (P 6 X 1))
+(deriv wff4)
+(+ (P 12 X 2) 6)
+
+wff5
+(+ (P 5 X 4) (+ (P 3 X 2) (P 5 X 1)))
+(deriv wff5)
+(+ (P 20 X 3) (+ (P 6 X 1) 5))
+
+
+;;; SIN
+wff6
+(SIN X)
+(deriv wff6)
+(COS X)
+
+wff7
+(SIN (P 7 X 2))
+(deriv wff7)
+(* (COS (P 7 X 2)) (P 14 X 1))
+
+wff8
+(+ (P 8 X 3) (SIN (P 2 X 1)))
+(deriv wff8)
+(+ (P 24 X 2) (* (COS (P 2 X 1)) 2))
+
+
+;;; difference
+wff9
+(- (P 9 X 4) (P 2 X 3))
+(deriv wff9)
+(- (P 36 X 3) (P 6 X 2))
+
+
+;;; product
+wff10
+(* (P 10 X 3) (P 5 X 2))
+(deriv wff10)
+(+ (* (P 10 X 3) (P 10 X 1)) (* (P 5 X 2) (P 30 X 2)))
+
+
+;;; quotient
+wff11
+(/ (P 11 X 3) (P 2 X 1))
+(deriv wff11)
+(/ (- (* (P 33 X 2) (P 2 X 1)) (* (P 11 X 3) 2) (* (P 2 X 1) (P 2 X 1))))
+
+
+;;; more complex product
+wff12
+(* (P 12 X 4) (+ (P 1 X 5) (P 2 X 4)))
+(deriv wff12)
+(+ (* (P 12 X 4) (+ (P 5 X 4) (P 8 X 3))) (* (+ (P 1 X 5) (P 2 X 4)) (P 48 X 3)))
+
+
+;;; Chain rule with SIN
+wff13
+(SIN (/ (P 13 X 2) (P 2 X 3)))
+(deriv wff13)
+(* (COS (/ (P 13 X 2) (P 2 X 3))) (/ (- (* (P 26 X 1) (P 2 X 3)) (* (P 13 X 2) (P 6 X 2)) (* (P 2 X 3) (P 2 X 3)))))
+
+
+;;; COS
+wff14
+(COS (P 14 X 1))
+(deriv wff14)
+(U- (* (SIN (P 14 X 1)) 14))
+
+
+;;; wff15 difference x - can be simplified
+wff15
+(- (P 15 X 1) (P 15 X 1))
+(deriv wff15)
+0
+
+
+;;; wff16 product - second product has a poly term of zero - can be simplified
+wff16
+(* (+ (P 16 X 1) 5) (P 4 X 1))
+(deriv wff16)
+(+ (* (+ (P 16 X 1) 5) 4) (* (P 4 X 1) 16))
+
+
+;;; unary
+wff17
+(U- (P 17 X 2))
+(deriv wff17)
+(U- (P 34 X 1))
+
+
+;;; wff18 U- - the resulting product can be simplified (double negative)
+wff18
+(U- (COS (P 18 X 1)))
+(deriv wff18)
+(* (SIN (P 18 X 1)) 18)
+
+
+;;; simple?
+wff19
+(P 19 X 1)
+(deriv wff19)
+19
+
+
+wff20
+(- (P 20 X 2) (P 20 X 2))
+(deriv wff20)
+0
+
+
+;;; wff21 U- U- - can be simplified
+wff21
+(U- (COS X))
+(deriv wff21)
+(SIN X)
+
+
+;;; wff22 U- - can be simplified
+wff22
+(U- (SIN (U- (P 22 X 2))))
+(deriv wff22)
+(* (COS (P 22 X 2)) (P 44 X 1))
+
+
+;;; wff23 multiple U- products can be simplified
+wff23
+(* (U- (P 23 X 2)) (U- (P 3 X 3)))
+(deriv wff23)
+(+ (* (P 23 X 2) (P 9 X 2)) (* (P 46 X 1) (P 3 X 3)))
+
+
+;;; wff24 U- simplification
+wff24
+(COS (U- (P 24 X 2)))
+(deriv wff24)
+(U- (* (SIN (P 24 X 2)) (P 48 X 1)))
+
+
+;;; wff25 - simplify poly term coeff combination
+wff25
+(+ (P 6 X 3) (P 7 X 3))
+(deriv wff25)
+(P 39 X 2)
+
+;;; wff26 - simplify poly term coeff combination
+wff26
+(* (P 5 X 4) (+ (P 3 X 2) (P 5 X 2)))
+(deriv wff26)
+(+ (* (P 5 X 4) (P 16 X 1)) (* (P 8 X 2) (P 20 X 3)))
+
+'DONE
+DONE
+;;      Loaded file p4LispRun.txt
+T
+Break 6 [8]> 
+

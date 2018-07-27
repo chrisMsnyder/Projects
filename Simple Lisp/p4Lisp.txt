@@ -1,0 +1,242 @@
+;;; Author: Chris Snyder
+;;; lok139
+;;; p4Lisp.txt
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;	WFF
+;;;	Parameters:
+;;;		L - the list to be formatted
+;;;	    
+;;;	Purpose:
+;;;		This function formats a list in preparation 
+;;;		for the DERIV function.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN WFF (L)
+	(cond 
+	  ( (ATOM L) L ) ;; if an atom return it 
+	  ( (NUMBERP (CAR L)) (cond ;; if begins with a number
+				( (AND (EQL (CADR L) 'X) (NULL (CADDR L))) (CONS 'P (APPEND L (CONS '1 NIL)) )  )
+				( (AND (EQL (CADR L) 'X) (NUMBERP (CADDR L))) (CONS 'P L) )
+				( T (LIST (CADR L) (CAR L) ( WFF (CADDR L))) )
+			      ) )
+	  ( (ATOM (CAR L)) (cond ;;if begins with an atom
+			    ( (EQL (CAR L) '-) (CONS 'U- (LIST (WFF (CADR L)))) )   
+			    ( T (CONS (CAR L) (LIST(WFF (CADR L)))) )
+			   ) )
+	  (T (CONS (CADR L) (LIST (WFF (CAR L)) (WFF (CADDR L))))) ) ;; otherwise
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; DERIV
+;;;Parameters:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the dirivative of the 
+;;;     passed in WFF list
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DERIV (L)
+	(cond
+	  ( (ATOM L) 0)
+	  ( T (eval `(,(HGET (CAR L)) ',(CDR L))) )
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_P
+;;;Parameters:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the derivative of
+;;;     of a polynomial
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+(DEFUN DER_P (L)
+       (COND
+	 ( (EQL (NTH 2 L) 1) (CAR L) )
+	 ( T (CONS 'P (LIST (*(CAR L)(NTH 2 L)) 'X (-(NTH 2 L) 1))) )
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_+
+;;;Parameter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the derivative of
+;;;     an addition expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(DEFUN DER_+ (L)
+       (LET ((A1 (DERIV (NTH 0 L)))
+	     (A2 (DERIV (NTH 1 L))))
+       	(COND
+       		((EQUAL A1 0) A2 )
+		((EQUAL A2 0) A1 )
+		((AND (NOT(ATOM A1)) (NOT(ATOM A2))) 
+	 		( COND
+	  			( (EQUAL (NTH 3 A1 ) (NTH 3 A2)) (LIST 'P (+ (NTH 1 A1) (NTH 1 A2)) 'X (NTH 3 A1)) )
+       				(T (CONS '+ (LIST A1 A2) ) )
+
+			))
+       		(T (CONS '+ (LIST A1 A2) ) )
+	)
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_-
+;;;Parameter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the derivative of
+;;;     an subtraction expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DER_- (L)
+       (LET ((A1 (DERIV (NTH 0 L)))
+	     (A2 (DERIV (NTH 1 L))))
+       	 (COND
+            ((EQUAL A1 A2) 0)
+       		((EQUAL A1 0) A2 )
+	    	((EQUAL A2 0) A1 ) 	 	
+       		(T (CONS '- (LIST A1 A2) ) )
+	)
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_*
+;;;Parmeter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the dirivative of 
+;;;     a multiplication expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DER_* (L)
+       (LET ((DCAR (DERIV (CAR L)))
+       	     (DCADR (DERIV (SIMP(CADR L))))
+             (DCADAR (DERIV (CADAR L))))
+
+       ( COND
+	((AND (NOT(ATOM DCAR)) (NOT(ATOM DCADR))) 
+	 	(COND
+			( (AND (EQL (CAR DCAR) 'U-) (EQL (CAR DCADR) 'U-)) (LIST '+ (LIST '* (SIMP(CADAR L)) (DERIV(CADADR L)))(LIST '* DCADAR (SIMP(CADADR L))) ))
+			( (AND (EQL (CAR DCAR) 'U-) (NOT(EQL (CAR DCADR) 'U-))) (LIST 'U- (LIST '+ (LIST '* (SIMP(CADAR L)) DCADR)(LIST '* DCADAR (SIMP(CADR L)))) ))
+			( (AND (NOT(EQL (CAR DCAR) 'U-)) (EQL (CAR DCADR) 'U-)) (LIST 'U- (LIST '+ (LIST '* (SIMP(CAR L)) (DERIV(CADADR L)))(LIST '* DCAR (SIMP(CADADR L)))) ))
+       			(T (LIST '+ (LIST '* (SIMP(CAR L)) DCADR) (LIST '* (SIMP(CADR L)) DCAR) ))	
+		))
+	(T (LIST '+ (LIST '* (SIMP(CAR L)) DCADR) (LIST '* (SIMP(CADR L)) DCAR) ))
+	)
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_/
+;;;Parmeter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the dirivative of 
+;;;     a division expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DER_/ (L)
+       (LIST '/ (LIST '- (LIST '* (DERIV (CAR L)) (SIMP(CADR L))) (LIST '* (SIMP(CAR L)) (DERIV (CADR L)) ) (LIST '* (SIMP(CADR L)) (SIMP(CADR L))) ) )
+)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_COS
+;;;Parmeter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the dirivative of 
+;;;     a COS expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DER_COS (L)
+       (LET ((DCAR (DERIV(CAR L)))
+	     (DCADAR (DERIV(CADR L))))
+	    
+       (COND
+       		((EQL (CAR L) 'X) (CONS 'U- (LIST (CONS 'SIN L))) )
+		((AND (NOT(ATOM DCAR)) (EQL (CAR DCAR) 'U-))  (LIST 'U- (LIST'* (LIST 'SIN (CADAR L)) (CADR DCAR)) ) )
+		((AND (NUMBERP(NTH 3 L)) (EQL (CAR DCAR) 'U-))  (LIST 'U- (LIST'* (LIST 'SIN (CADAR L)) (CADR DCAR)) ) )
+		( T (LIST 'U- (CONS '* (LIST (CONS 'SIN L) (DERIV (CAR L))))) )
+       )
+       )
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_SIN
+;;;Parmeter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the dirivative of 
+;;;     a SIN expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DER_SIN (L)
+       (LET ((DCAR (DERIV(CAR L)))
+	     (DCADR (DERIV(CADR L))))
+       (COND
+       		( (EQL (CAR L) 'X) (CONS 'COS L) )
+		( (AND (NOT(ATOM DCAR))(EQL (CAR DCAR) 'U-)) (LIST 'U- (LIST '* (LIST 'COS (CADAR L)) (CADR DCAR)) ) )
+		( (AND (NUMBERP(NTH 3 L))(EQL (CAR DCAR) 'U-)) (LIST 'U- (LIST '* (LIST 'COS (CADR L)) (CADR DCAR)) ) )
+		( T (LIST '* (CONS 'COS L) (DERIV (CAR L))) )
+	)
+       )
+)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;DER_U-
+;;;Parmeter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function will take the dirivative of 
+;;;     a unary minus expression
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN DER_U- (L)
+       (LET ((DCAR (DERIV (CAR L)))
+	     (DCADAR (DERIV (CADAR L))))
+       (COND
+	 	((EQL (CAR DCAR) 'U-) (CADR DCAR))
+	 	;((EQL (CAR DCAR) 'U-) DCADAR)
+		(T (LIST 'U- DCAR))
+	)
+       )
+       
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;SIMP
+;;;Parmeter:
+;;;     L - the WFF to be derived
+;;;
+;;;Purpose:
+;;;     This function simplifies some expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(DEFUN SIMP (L)
+	(COND 
+	  ( (ATOM (CADR L)) L )
+	  ( (ATOM (CADDR L)) L )
+	  ( (EQUAL (NTH 3 (NTH 1 L)) (NTH 3 (NTH 2 L))) 
+	   	(COND
+	   		( (EQL (CAR L) '+) (CONS 'P (LIST (+ (NTH 1 (NTH 1 L)) (NTH 1 (NTH 2 L))) 'X (NTH 3 (NTH 2 L)))))
+	   		( (EQL (CAR L) '-) (CONS 'P (LIST (- (NTH 1 (NTH 1 L)) (NTH 1 (NTH 2 L))) 'X (NTH 3 (NTH 2 L)))))
+			(T L)
+		))
+	  (T L)
+	  )
+)
